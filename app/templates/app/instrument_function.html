@@ -1,9 +1,77 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<title>TEST</title>
-	</head>
-	<body>
-		<p>This is a test.</p>
-	</body>
+<head>
+<title>TEST</title>
+</head>
+<body>
+
+<p id="grp8"></p>
+
+<video autoplay></video>
+
+<script>
+	/*
+	var error = function(error) {
+	    document.getElementById("grp8").innerHTML = error.message;
+	};
+
+	function my_function(CameraStream) {
+	    var video = document.querySelector("video");
+	    video.scrObject = CameraStream;
+	    video.onloadedmetadata = function() {
+		video.play();
+	    };
+	}
+	navigator.mediaDevices.getUserMedia({
+	    video: {
+	        facingMode: { exact: "environment" }, // rear camera
+	    },  
+	    my_function(MediaStream), 
+	    error
+	);
+	*/
+
+	/*
+
+	const constraints = {
+	video: {facingMode: { exact: "environment" }, },
+	};
+
+	async function getMedia(constraints) {
+	    let stream = null;
+	
+	    try {
+	        stream = await navigator.mediaDevices.getUserMedia(constraints);
+	  
+            } catch (error) {
+	        document.getElementById("grp8").innerHTML = error.message;
+	    }
+	}
+
+       */
+    const constraints = {
+        video: {facingMode: { exact: "environment" }, },
+    //    video: {facingMode: { exact: "user" }, },
+    };
+
+    var errorCallback = function(error) {
+        document.getElementById("grp8").innerHTML = error.message;
+    };
+
+    navigator.mediaDevices.getUserMedia(
+        constraints, 
+	function(CameraStream) {
+            var video = document.querySelector('video');
+	    video.src = window.URL.createObjectURL(alsoCameraStream);
+	    video.onloadedmetadata = function(cap) {
+	    // where the code for instrument goes
+
+            }
+        }, 
+        errorCallback
+    );
+
+</script>
+
+</body>
 </html>
