@@ -1,3 +1,4 @@
 from django.shortcuts import render
 
-# Create your views here.
+def instrument_function(request):
+    return render(request, 'app/instrument_function.html', {})
