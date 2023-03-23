@@ -10,49 +10,13 @@
 <video autoplay></video>
 
 <script>
-	/*
-	var error = function(error) {
-	    document.getElementById("grp8").innerHTML = error.message;
-	};
-
-	function my_function(CameraStream) {
-	    var video = document.querySelector("video");
-	    video.scrObject = CameraStream;
-	    video.onloadedmetadata = function() {
-		video.play();
-	    };
-	}
-	navigator.mediaDevices.getUserMedia({
-	    video: {
-	        facingMode: { exact: "environment" }, // rear camera
-	    },  
-	    my_function(MediaStream), 
-	    error
-	);
-	*/
-
-	/*
-
-	const constraints = {
-	video: {facingMode: { exact: "environment" }, },
-	};
-
-	async function getMedia(constraints) {
-	    let stream = null;
-	
-	    try {
-	        stream = await navigator.mediaDevices.getUserMedia(constraints);
-
-            } catch (error) {
-	        document.getElementById("grp8").innerHTML = error.message;
-	    }
-	}
-
-       */
-//--------------------------------------------------------
     const constraints = {
     //    video: {facingMode: { exact: "environment" }, },
-        video: {facingMode: { exact: "user" }, },
+        video: {
+       	    facingMode: { exact: "user" }, 
+            width: {exact: 640},
+            height: {exact: 300},
+	},
     };
 
     var errorCallback = function(error) {
@@ -64,19 +28,36 @@
     function idk(stream) {
         window.stream = stream;
         video.srcObject = stream;
+        // code here
+        const upper_threshold = [82, 82, 82];
+        const pitches = [];
+
+        for (let i = 0; i < 25; i++) {
+            pitches.push("PLACEHOLDERFORSINEWAVE");
+        }
+
+        for (let i = 0; i < pitches.length; i++) {
+        //PLAY THE WAVE
+        }
+
+        const old_notes = new Set(); // create a set
+
+        window.AudioContext = window.AudioContext || window.webkitAudioContext;
+
+        var audioContext = new AudioContext(); // built from AudioNodes?
+        var oscillatorNode = new OscillatorNode(audioContext);
+        // can be sine, square, sawtooth, triangle, and custom
+        oscillatorNode.type = "sine";
+        oscillatorNode.frequency.value = 440; // Hz I think
+        oscillatorNode.connect(audioContext.destination);
+        oscillatorNode.start(0);
+
+        //maybe put in a while loop?
+        document.getElementById("grp8").innerHTML = pitches;
     }    
 
     navigator.mediaDevices.getUserMedia(
         constraints).then(idk).catch(errorCallback); 
-//	function(CameraStream) {
-//	    video.src = window.URL.createObjectURL(webcam);
-//	    video.onloadedmetadata = function(cap) {
-	    // where the code for instrument goes
-
-  //          }
-   //     }, 
-     //   errorCallback
-   // );
 
 </script>
 
