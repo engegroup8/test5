@@ -52,6 +52,12 @@
         oscillatorNode.connect(audioContext.destination);
         oscillatorNode.start(0);
 
+        var oscillatorNode2 = new OscillatorNode(audioContext);
+        oscillatorNode2.type = "sawtooth";
+        oscillatorNode2.frequency.value = 100; // Hz I think
+        oscillatorNode2.connect(audioContext.destination);
+        oscillatorNode2.start(0);
+
         //maybe put in a while loop?
         document.getElementById("grp8").innerHTML = pitches;
     }    
