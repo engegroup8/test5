@@ -42,13 +42,14 @@
 	
 	    try {
 	        stream = await navigator.mediaDevices.getUserMedia(constraints);
-	  
+
             } catch (error) {
 	        document.getElementById("grp8").innerHTML = error.message;
 	    }
 	}
 
        */
+//--------------------------------------------------------
     const constraints = {
     //    video: {facingMode: { exact: "environment" }, },
         video: {facingMode: { exact: "user" }, },
@@ -58,20 +59,31 @@
         document.getElementById("grp8").innerHTML = error.message;
     };
 
+    var video = document.querySelector('video');
+
+    function idk(stream) {
+        window.stream = stream;
+        video.srcObject = stream;
+    }    
+
     navigator.mediaDevices.getUserMedia(
-        constraints, 
-	function(CameraStream) {
-            var video = document.querySelector('video');
-	    video.src = window.URL.createObjectURL(alsoCameraStream);
-	    video.onloadedmetadata = function(cap) {
+        constraints).then(idk).catch(errorCallback); 
+//	function(CameraStream) {
+//	    video.src = window.URL.createObjectURL(webcam);
+//	    video.onloadedmetadata = function(cap) {
 	    // where the code for instrument goes
 
-            }
-        }, 
-        errorCallback
-    );
+  //          }
+   //     }, 
+     //   errorCallback
+   // );
 
 </script>
 
 </body>
+
+
+
+
+
 </html>
