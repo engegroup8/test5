@@ -7,15 +7,20 @@
 
 <p id="grp8"></p>
 
-<video autoplay></video>
+<video id="video" width="640" height="300" autoplay></video>
+<canvas id="canvas" width="640" height="300"></canvas>
 
 <script>
+    const WIDTH = 640;
+    const HEIGHT = 300;
+    const upper_threshold = [82, 82, 82];
+
     const constraints = {
     //    video: {facingMode: { exact: "environment" }, },
         video: {
        	    facingMode: { exact: "user" }, 
-            width: {exact: 640},
-            height: {exact: 300},
+            width: {exact: WIDTH},
+            height: {exact: HEIGHT},
 	},
     };
 
@@ -23,14 +28,71 @@
         document.getElementById("grp8").innerHTML = error.message;
     };
 
-    var video = document.querySelector('video');
 
-    function idk(stream) {
-        window.stream = stream;
-        video.srcObject = stream;
-        // code here
-        const upper_threshold = [82, 82, 82];
-        const pitches = [];
+	var canvas = document.getElementById('canvas'),
+                context = canvas.getContext('2d'),
+                video = document.getElementById('video'),
+                vendorUrl = window.URL || window.webkitURL;
+        navigator.getMedia = navigator.getUserMedia ||
+                             navigator.webkitGetUserMedia ||
+                             navigator.mozGetUserMedia ||
+                             navigator.msGetUserMedia;
+        navigator.getMedia(
+                constraints, 
+                function(stream) {
+                video.srcObject = stream;
+                video.play();
+        }, errorCallback );
+
+//	context.moveTo(0,HEIGHT/2);
+//	context.lineTo(WIDTH,HEIGHT/2);
+//	context.stroke();
+
+	video.addEventListener('play', function() {
+                draw(this, context, WIDTH, HEIGHT);
+        }, false);
+
+
+	function draw(video, context, width, height) {
+                var image, data, i;
+                context.drawImage(video, 0, 0, width, height);
+
+                image = context.getImageData(0, height/2, width, 1); // the middle pixel line
+                data = image.data;
+
+                 //       document.getElementById("grp8").innerHTML = data;
+                //        document.getElementById("grp8").innerHTML = data.length;
+
+		//var data_length = (data.length / 4) / 4; // every 4
+		const dark = [];
+
+                for (i = 0; i < data.length; i = i + 4) {
+		    if (
+                //    data[i*4];         // r
+                 //   data[i*4 + 1];    // g
+                   // data[i*4 + 2];   // b
+		        data[i] <= upper_threshold[0] &&
+			data[i + 1] <= upper_threshold[1] &&
+			data[i + 2] <= upper_threshold[2]) {
+			
+		        dark.push(i);
+                        document.getElementById("grp8").innerHTML = dark;
+		    }
+
+                }
+
+              //  image.data = data;
+
+              //  context.putImageData(image, 0, 0);
+
+		music(dark, width);
+
+                setTimeout(draw, 10, video, context, width, height);
+        }
+
+     	function music(indices, width) {
+	    const pitches = [];
+	    const notes = new Set(); // create a set
 
         for (let i = 0; i < 25; i++) {
             pitches.push("PLACEHOLDERFORSINEWAVE");
@@ -42,28 +104,94 @@
 
         const old_notes = new Set(); // create a set
 
+	for (let horizontal_pos = 0; horizontal_pos < indices.length; horizontal_pos++) {
+	    notes.add(horizontal_pos/Math.floor(width/25));
+	}
+
+	let turn_on = new Set(); // in notes, not in old notes
+	notes.forEach (function(value) { 
+	    turn_on.add(value);
+	})
+	old_notes.forEach (function(value) {
+	    turn_on.delete(value);
+	})
+
+        let turn_off = new Set(); // in old notes, not in notes
+        old_notes.forEach (function(value) {
+            turn_off.add(value);
+        })
+        notes.forEach (function(value) {
+            turn_off.delete(value);
+        })	
+
         window.AudioContext = window.AudioContext || window.webkitAudioContext;
 
         var audioContext = new AudioContext(); // built from AudioNodes?
+        var currentTime = audioContext.currentTime;
+
         var oscillatorNode = new OscillatorNode(audioContext);
         // can be sine, square, sawtooth, triangle, and custom
         oscillatorNode.type = "sine";
         oscillatorNode.frequency.value = 440; // Hz I think
         oscillatorNode.connect(audioContext.destination);
-        oscillatorNode.start(0);
+        
+//	oscillatorNode.start(0);
+//	oscillatorNode.stop(0);
 
         var oscillatorNode2 = new OscillatorNode(audioContext);
         oscillatorNode2.type = "sawtooth";
         oscillatorNode2.frequency.value = 100; // Hz I think
         oscillatorNode2.connect(audioContext.destination);
-        oscillatorNode2.start(0);
-
-        //maybe put in a while loop?
-        document.getElementById("grp8").innerHTML = pitches;
+        
+//        oscillatorNode2.start(0);
+//	oscillatorNode2.stop(0);
+/*
+	turn_off.forEach (function(value) {
+	    if (value < width/2) {
+		oscillatorNode.stop(0);
+	    }
+	else {
+		oscillatorNode2.stop(0);	
+	}
+        })
+       */
+/*
+	turn_on.forEach (function(value) {
+            if (value < width/2) {
+                //oscillatorNode.start(0);
+                oscillatorNode.start(currentTime);
+                oscillatorNode.stop(currentTime + 1);
+            }
+        else {
+                //oscillatorNode2.start(0);
+                oscillatorNode2.start(currentTime);
+                oscillatorNode2.stop(currentTime + 1);	        
+        }
+        })
+*/
+/*
+	turn_off.forEach (function(value) {
+            if (value == 5) {
+                oscillatorNode.stop(0);
+            }
+        else {
+                oscillatorNode2.stop(0);
+        }
+        })
+*/
+/*        turn_on.forEach (function(value) {
+            if (value < width/2) {
+                oscillatorNode.start(0);
+                            
+            }
+        else {
+                oscillatorNode2.start(0);
+                        
+        }
+        })
+  */     
     }    
 
-    navigator.mediaDevices.getUserMedia(
-        constraints).then(idk).catch(errorCallback); 
 
 </script>
 
